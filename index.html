@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azani · Connectivity Operations</title>
+<meta name="theme-color" content="#0B3D5C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===== Navigation Rail ===== -->
+  <nav class="rail" id="rail">
+    <div class="rail__brand">
+      <div class="brand-mark" aria-hidden="true">
+        <span class="bar bar--1"></span><span class="bar bar--2"></span><span class="bar bar--3"></span><span class="bar bar--4"></span>
+      </div>
+      <span class="brand-name">Azani</span>
+    </div>
+
+    <button class="rail__item is-active" data-view="dashboard">
+      <span class="rail__icon" data-icon="grid"></span>
+      <span class="rail__label">Dashboard</span>
+    </button>
+    <button class="rail__item" data-view="institutions">
+      <span class="rail__icon" data-icon="building"></span>
+      <span class="rail__label">Institutions</span>
+    </button>
+    <button class="rail__item" data-view="surveys">
+      <span class="rail__icon" data-icon="map"></span>
+      <span class="rail__label">Site Surveys</span>
+    </button>
+    <button class="rail__item" data-view="infrastructure">
+      <span class="rail__icon" data-icon="box"></span>
+      <span class="rail__label">Infrastructure</span>
+    </button>
+    <button class="rail__item" data-view="installations">
+      <span class="rail__icon" data-icon="tool"></span>
+      <span class="rail__label">Installations</span>
+    </button>
+    <button class="rail__item" data-view="subscriptions">
+      <span class="rail__icon" data-icon="wifi"></span>
+      <span class="rail__label">Subscriptions</span>
+    </button>
+    <button class="rail__item" data-view="payments">
+      <span class="rail__icon" data-icon="cash"></span>
+      <span class="rail__label">Payments</span>
+    </button>
+    <button class="rail__item" data-view="reports">
+      <span class="rail__icon" data-icon="chart"></span>
+      <span class="rail__label">Reports</span>
+    </button>
+    <button class="rail__item" data-view="settings">
+      <span class="rail__icon" data-icon="settings"></span>
+      <span class="rail__label">Settings</span>
+    </button>
+
+    <div class="rail__footer">
+      <button class="rail__item rail__item--run" id="runBillingBtn" title="Run billing cycle">
+        <span class="rail__icon" data-icon="pulse"></span>
+        <span class="rail__label">Run Billing</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== Mobile top bar ===== -->
+  <header class="topbar">
+    <button class="topbar__menu" id="menuToggle" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="topbar__brand">
+      <div class="brand-mark brand-mark--sm" aria-hidden="true">
+        <span class="bar bar--1"></span><span class="bar bar--2"></span><span class="bar bar--3"></span><span class="bar bar--4"></span>
+      </div>
+      <span class="brand-name">Azani</span>
+    </div>
+    <button class="topbar__action" id="topbarAddBtn" aria-label="Quick add">+</button>
+  </header>
+
+  <!-- ===== Main content ===== -->
+  <main class="main" id="main">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section class="view is-active" id="view-dashboard">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Network status</p>
+          <h1>Operations overview</h1>
+        </div>
+        <div class="view__header-actions">
+          <span class="clock" id="liveClock"></span>
+        </div>
+      </header>
+
+      <div class="pulse-strip" id="pulseStrip"><!-- populated by JS --></div>
+
+      <div class="dash-grid">
+        <article class="card card--funnel">
+          <h3>Pipeline</h3>
+          <div class="funnel" id="funnelChart"></div>
+        </article>
+
+        <article class="card card--revenue">
+          <h3>Revenue collected <span class="card__sub">last 6 months</span></h3>
+          <div class="bars" id="revenueBars"></div>
+        </article>
+
+        <article class="card card--alerts">
+          <div class="card__head-row">
+            <h3>Needs attention</h3>
+            <span class="chip chip--muted" id="alertCount">0</span>
+          </div>
+          <ul class="alert-list" id="alertList"></ul>
+        </article>
+
+        <article class="card card--activity">
+          <h3>Recent activity</h3>
+          <ul class="activity-list" id="activityList"></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- ---------- INSTITUTIONS ---------- -->
+    <section class="view" id="view-institutions">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Client registry</p>
+          <h1>Institutions</h1>
+        </div>
+        <div class="view__header-actions">
+          <button class="btn btn--filled" id="newInstitutionBtn">
+            <span class="btn__icon" data-icon="plus"></span> Register institution
+          </button>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="search-field">
+          <span class="search-field__icon" data-icon="search"></span>
+          <input type="text" id="institutionSearch" placeholder="Search institutions by name or location…">
+        </div>
+        <div class="filter-chips" id="institutionFilters">
+          <button class="chip chip--filter is-active" data-status="all">All</button>
+          <button class="chip chip--filter" data-status="lead">New</button>
+          <button class="chip chip--filter" data-status="surveyed">Surveyed</button>
+          <button class="chip chip--filter" data-status="awaiting_infra">Awaiting infra</button>
+          <button class="chip chip--filter" data-status="ready_for_install">Ready</button>
+          <button class="chip chip--filter" data-status="installed">Installed</button>
+          <button class="chip chip--filter" data-status="active">Active</button>
+          <button class="chip chip--filter" data-status="suspended">Suspended</button>
+          <button class="chip chip--filter" data-status="disconnected">Disconnected</button>
+        </div>
+      </div>
+
+      <div class="institution-grid" id="institutionGrid"><!-- populated by JS --></div>
+    </section>
+
+    <!-- ---------- SURVEYS ---------- -->
+    <section class="view" id="view-surveys">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Field assessment</p>
+          <h1>Site surveys</h1>
+        </div>
+        <div class="view__header-actions">
+          <button class="btn btn--filled" id="newSurveyBtn">
+            <span class="btn__icon" data-icon="plus"></span> Log survey
+          </button>
+        </div>
+      </header>
+      <div class="table-card">
+        <table class="data-table" id="surveyTable">
+          <thead>
+            <tr>
+              <th>Institution</th><th>Date</th><th>Distance to POP</th><th>Terrain</th><th>Readiness</th><th>Equipment needed</th><th>Surveyed by</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="surveyTableBody"></tbody>
+        </table>
+        <p class="empty-state" id="surveyEmpty" hidden>No surveys logged yet. Survey a registered institution to assess installation readiness.</p>
+      </div>
+    </section>
+
+    <!-- ---------- INFRASTRUCTURE ---------- -->
+    <section class="view" id="view-infrastructure">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Equipment sales</p>
+          <h1>Infrastructure purchases</h1>
+        </div>
+        <div class="view__header-actions">
+          <button class="btn btn--filled" id="newPurchaseBtn">
+            <span class="btn__icon" data-icon="plus"></span> Record purchase
+          </button>
+        </div>
+      </header>
+
+      <div class="catalog-strip" id="catalogStrip"></div>
+
+      <div class="table-card">
+        <table class="data-table" id="purchaseTable">
+          <thead>
+            <tr><th>Institution</th><th>Items</th><th>Total cost</th><th>Status</th><th>Date</th><th></th></tr>
+          </thead>
+          <tbody id="purchaseTableBody"></tbody>
+        </table>
+        <p class="empty-state" id="purchaseEmpty" hidden>No infrastructure purchases recorded yet.</p>
+      </div>
+    </section>
+
+    <!-- ---------- INSTALLATIONS ---------- -->
+    <section class="view" id="view-installations">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Deployment</p>
+          <h1>Installations</h1>
+        </div>
+        <div class="view__header-actions">
+          <button class="btn btn--filled" id="newInstallBtn">
+            <span class="btn__icon" data-icon="plus"></span> Log installation
+          </button>
+        </div>
+      </header>
+      <div class="table-card">
+        <table class="data-table" id="installTable">
+          <thead>
+            <tr><th>Institution</th><th>Date</th><th>Technician</th><th>Equipment installed</th><th>Fee</th><th>Payment</th><th></th></tr>
+          </thead>
+          <tbody id="installTableBody"></tbody>
+        </table>
+        <p class="empty-state" id="installEmpty" hidden>No installations logged yet. Institutions become eligible once marked ready for install.</p>
+      </div>
+    </section>
+
+    <!-- ---------- SUBSCRIPTIONS ---------- -->
+    <section class="view" id="view-subscriptions">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Recurring service</p>
+          <h1>Subscriptions</h1>
+        </div>
+        <div class="view__header-actions">
+          <button class="btn btn--text" id="managePlansBtn">Manage plans</button>
+          <button class="btn btn--filled" id="newSubscriptionBtn">
+            <span class="btn__icon" data-icon="plus"></span> Activate subscription
+          </button>
+        </div>
+      </header>
+
+      <div class="plan-strip" id="planStrip"></div>
+
+      <div class="table-card">
+        <table class="data-table" id="subscriptionTable">
+          <thead>
+            <tr><th>Institution</th><th>Plan</th><th>Status</th><th>Next due</th><th>Days overdue</th><th>Balance</th><th></th></tr>
+          </thead>
+          <tbody id="subscriptionTableBody"></tbody>
+        </table>
+        <p class="empty-state" id="subscriptionEmpty" hidden>No active subscriptions yet. Activate a plan once installation is complete.</p>
+      </div>
+    </section>
+
+    <!-- ---------- PAYMENTS ---------- -->
+    <section class="view" id="view-payments">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Ledger</p>
+          <h1>Payments</h1>
+        </div>
+        <div class="view__header-actions">
+          <button class="btn btn--filled" id="newPaymentBtn">
+            <span class="btn__icon" data-icon="plus"></span> Record payment
+          </button>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="search-field">
+          <span class="search-field__icon" data-icon="search"></span>
+          <input type="text" id="paymentSearch" placeholder="Search by institution or reference…">
+        </div>
+        <div class="filter-chips" id="paymentFilters">
+          <button class="chip chip--filter is-active" data-type="all">All</button>
+          <button class="chip chip--filter" data-type="registration">Registration</button>
+          <button class="chip chip--filter" data-type="infrastructure">Infrastructure</button>
+          <button class="chip chip--filter" data-type="installation">Installation</button>
+          <button class="chip chip--filter" data-type="subscription">Subscription</button>
+          <button class="chip chip--filter" data-type="late_fine">Late fines</button>
+          <button class="chip chip--filter" data-type="reconnection">Reconnection</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="data-table" id="paymentTable">
+          <thead>
+            <tr><th>Date</th><th>Institution</th><th>Type</th><th>Reference</th><th>Method</th><th>Amount</th></tr>
+          </thead>
+          <tbody id="paymentTableBody"></tbody>
+        </table>
+        <p class="empty-state" id="paymentEmpty" hidden>No payments recorded yet.</p>
+      </div>
+    </section>
+
+    <!-- ---------- REPORTS ---------- -->
+    <section class="view" id="view-reports">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Insight</p>
+          <h1>Reports</h1>
+        </div>
+        <div class="view__header-actions">
+          <button class="btn btn--text" id="exportReportBtn">
+            <span class="btn__icon" data-icon="download"></span> Export CSV
+          </button>
+        </div>
+      </header>
+
+      <div class="report-tabs" id="reportTabs">
+        <button class="report-tab is-active" data-report="revenue">Revenue summary</button>
+        <button class="report-tab" data-report="arrears">Arrears &amp; collections</button>
+        <button class="report-tab" data-report="status">Status breakdown</button>
+        <button class="report-tab" data-report="plans">Plan performance</button>
+        <button class="report-tab" data-report="institutions">By institution</button>
+      </div>
+
+      <div class="report-body" id="reportBody"></div>
+    </section>
+
+    <!-- ---------- SETTINGS ---------- -->
+    <section class="view" id="view-settings">
+      <header class="view__header">
+        <div>
+          <p class="eyebrow">Configuration</p>
+          <h1>Billing &amp; fees</h1>
+        </div>
+      </header>
+
+      <div class="settings-grid">
+        <article class="card">
+          <h3>Late payment policy</h3>
+          <p class="card__hint">Controls how Azani treats institutions whose subscription payment is overdue.</p>
+          <div class="field-row">
+            <label>Suspend after (days overdue)
+              <input type="number" id="setSuspendAfter" min="1" max="30">
+            </label>
+            <label>Disconnect after (days overdue)
+              <input type="number" id="setDisconnectAfter" min="1" max="60">
+            </label>
+          </div>
+          <div class="field-row">
+            <label>Late fine (KSh)
+              <input type="number" id="setLateFine" min="0">
+            </label>
+            <label>Reconnection fee (KSh)
+              <input type="number" id="setReconnectionFee" min="0">
+            </label>
+          </div>
+          <button class="btn btn--filled" id="saveSettingsBtn">Save policy</button>
+        </article>
+
+        <article class="card">
+          <h3>Registration fee default</h3>
+          <p class="card__hint">Applied when a new institution is registered. Editable per institution.</p>
+          <div class="field-row">
+            <label>Default registration fee (KSh)
+              <input type="number" id="setRegistrationFee" min="0">
+            </label>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Data</h3>
+          <p class="card__hint">All data is stored locally in this browser. Use these tools to back up or reset.</p>
+          <div class="field-row">
+            <button class="btn btn--text" id="exportDataBtn">Export backup (JSON)</button>
+            <button class="btn btn--text btn--danger" id="resetDataBtn">Reset all data</button>
+          </div>
+          <label class="import-label">Import backup
+            <input type="file" id="importDataInput" accept="application/json">
+          </label>
+        </article>
+
+        <article class="card">
+          <h3>Seed demo data</h3>
+          <p class="card__hint">Populate the app with realistic sample institutions, payments and surveys to explore features.</p>
+          <button class="btn btn--filled" id="seedDataBtn">Load demo dataset</button>
+        </article>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== Modal root ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalRoot" role="dialog" aria-modal="true"></div>
+</div>
+
+<!-- ===== Snackbar / toast ===== -->
+<div class="snackbar" id="snackbar"></div>
+
+<!-- ===== FAB (mobile) ===== -->
+<button class="fab" id="mobileFab" aria-label="Quick add">+</button>
+
+<script src="js/icons.js"></script>
+<script src="js/store.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/billing.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/institutions.js"></script>
+<script src="js/views/surveys.js"></script>
+<script src="js/views/infrastructure.js"></script>
+<script src="js/views/installations.js"></script>
+<script src="js/views/subscriptions.js"></script>
+<script src="js/views/payments.js"></script>
+<script src="js/views/reports.js"></script>
+<script src="js/views/settings.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
